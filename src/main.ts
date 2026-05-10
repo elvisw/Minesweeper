@@ -265,6 +265,8 @@ function setupEvents(): void {
   // ── Touch support ──
   let touchStartTime = 0
   let touchStartPos: { x: number; y: number } | null = null
+  let lastTapTime = 0
+  let lastTapCell: { row: number; col: number } | null = null
 
   gridContainer.addEventListener('touchstart', (e: TouchEvent) => {
     if (e.touches.length !== 1) return
@@ -288,10 +290,21 @@ function setupEvents(): void {
 
     const row = Number(cellEl.dataset.row)
     const col = Number(cellEl.dataset.col)
+    const cell = state.grid[row]?.[col]
 
     if (!moved && duration < 400) {
-      // Short tap → reveal
-      revealCell(row, col)
+      // Double-tap on revealed number → chord
+      const now = Date.now()
+      if (cell?.isRevealed && !cell.isMined &&
+          lastTapCell?.row === row && lastTapCell?.col === col &&
+          now - lastTapTime < 400) {
+        chordReveal(row, col)
+        lastTapCell = null
+      } else {
+        revealCell(row, col)
+        lastTapTime = now
+        lastTapCell = { row, col }
+      }
     } else if (!moved && duration >= 500) {
       // Long press → flag
       toggleFlag(row, col)
