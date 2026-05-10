@@ -1,17 +1,8 @@
-import { GamePhase, BEGINNER, type GameState } from './core/types'
+import { BEGINNER } from './core/types'
+import { createInitialState } from './state/game-state'
 import './style.css'
 
-// 验证类型导入可用
-const initialState: GameState = {
-  phase: GamePhase.Idle,
-  grid: [],
-  rows: BEGINNER.rows,
-  cols: BEGINNER.cols,
-  mineCount: BEGINNER.mines,
-  flagCount: 0,
-  elapsedSeconds: 0,
-  firstClickDone: false,
-}
+const state = createInitialState(BEGINNER)
 
 const app = document.querySelector<HTMLDivElement>('#app')
 if (!app) throw new Error('Root element #app not found')
@@ -22,8 +13,13 @@ const h1 = document.createElement('h1')
 h1.textContent = '扫雷'
 
 const p = document.createElement('p')
-p.textContent = `${initialState.rows}×${initialState.cols} | ${initialState.mineCount} 雷 | 状态: ${initialState.phase}`
+p.textContent = `${state.rows}×${state.cols} | ${state.mineCount} 雷 | 状态: ${state.phase}`
+p.setAttribute('data-phase', state.phase)
+
+const p2 = document.createElement('p')
+p2.textContent = `grid 尺寸: ${state.grid.length}×${state.grid[0].length} | firstClickDone: ${state.firstClickDone}`
 
 container.appendChild(h1)
 container.appendChild(p)
+container.appendChild(p2)
 app.appendChild(container)
