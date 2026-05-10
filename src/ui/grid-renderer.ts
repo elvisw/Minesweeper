@@ -3,6 +3,15 @@ import { createCellElement } from './cell-renderer'
 import { calculateAdjacentMines } from '../core/number-calculator'
 import styles from '../assets/grid.module.css'
 
+function getCellSize(cols: number): number {
+  const vw = window.innerWidth
+  const maxSize = 24
+  const padding = 40
+  const available = Math.min(vw - padding, 800)
+  const fitSize = Math.floor(available / cols)
+  return Math.min(maxSize, Math.max(14, fitSize))
+}
+
 export function renderGrid(
   container: HTMLElement,
   state: GameState,
@@ -12,8 +21,9 @@ export function renderGrid(
 
   const gridEl = document.createElement('div')
   gridEl.classList.add(styles.grid)
-  gridEl.style.gridTemplateColumns = `repeat(${state.cols}, 24px)`
-  gridEl.style.gridTemplateRows = `repeat(${state.rows}, 24px)`
+  const cellSize = getCellSize(state.cols)
+  gridEl.style.gridTemplateColumns = `repeat(${state.cols}, ${cellSize}px)`
+  gridEl.style.gridTemplateRows = `repeat(${state.rows}, ${cellSize}px)`
 
   const numbers = mineGrid ? calculateAdjacentMines(mineGrid) : null
 

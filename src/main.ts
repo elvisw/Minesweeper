@@ -12,6 +12,7 @@ import { renderGrid, updateGridCell } from './ui/grid-renderer'
 import { createFaceButton, updateFaceButton } from './ui/face-button'
 import { createCounter, updateCounter } from './ui/counter'
 import { createDifficultyMenu } from './ui/difficulty-menu'
+import { recordGame, getStats } from './storage/stats-store'
 import './assets/variables.css'
 import appStyles from './assets/main.module.css'
 import gridStyles from './assets/grid.module.css'
@@ -45,6 +46,24 @@ function startTimer(): void {
 function stopTimer(): void {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null }
 }
+
+// ── Stats ──
+const statsEl = document.createElement('div')
+statsEl.style.cssText = 'font-size:11px;padding:4px 8px;color:#666;text-align:center;margin-top:6px'
+
+function updateStats(won: boolean): void {
+  recordGame(won, state.elapsedSeconds)
+  const s = getStats()
+  const rate = s.gamesPlayed > 0 ? Math.round((s.gamesWon / s.gamesPlayed) * 100) : 0
+  statsEl.textContent = `总局: ${s.gamesPlayed} | 胜: ${s.gamesWon} (${rate}%) | 最佳: ${s.bestTime ?? '-'}s | 连胜: ${s.currentStreak}`
+}
+
+// Init stats display
+;(function initStats() {
+  const s = getStats()
+  const rate = s.gamesPlayed > 0 ? Math.round((s.gamesWon / s.gamesPlayed) * 100) : 0
+  statsEl.textContent = `总局: ${s.gamesPlayed} | 胜: ${s.gamesWon} (${rate}%) | 最佳: ${s.bestTime ?? '-'}s | 连胜: ${s.currentStreak}`
+})()
 
 // ── Game actions ──
 function resetGame(config: DifficultyConfig): void {
@@ -106,6 +125,7 @@ function revealCell(row: number, col: number): void {
     stopTimer()
     updateFaceButton(faceBtn, GamePhase.Lost)
     renderGrid(gridContainer, state, mineGrid)
+    updateStats(false)
     return
   }
 
@@ -129,6 +149,7 @@ function revealCell(row: number, col: number): void {
     stopTimer()
     updateFaceButton(faceBtn, GamePhase.Won)
     renderGrid(gridContainer, state, mineGrid)
+    updateStats(true)
     return
   }
 
@@ -241,6 +262,47 @@ function setupEvents(): void {
     e.preventDefault()
   })
 
+  // ── Touch support ──
+  let touchStartTime = 0
+  let touchStartPos: { x: number; y: number } | null = null
+
+  gridContainer.addEventListener('touchstart', (e: TouchEvent) => {
+    if (e.touches.length !== 1) return
+    const t = e.touches[0]
+    touchStartTime = Date.now()
+    touchStartPos = { x: t.clientX, y: t.clientY }
+  }, { passive: true })
+
+  gridContainer.addEventListener('touchend', (e: TouchEvent) => {
+    if (!touchStartPos) return
+    e.preventDefault()
+    const duration = Date.now() - touchStartTime
+    const t = e.changedTouches[0]
+    const dx = t.clientX - touchStartPos.x
+    const dy = t.clientY - touchStartPos.y
+    const moved = Math.sqrt(dx * dx + dy * dy) > 10
+
+    const cellEl = (document.elementFromPoint(t.clientX, t.clientY) as HTMLElement)
+      ?.closest<HTMLElement>(`.${gridStyles.cell}`)
+    if (!cellEl) { touchStartPos = null; return }
+
+    const row = Number(cellEl.dataset.row)
+    const col = Number(cellEl.dataset.col)
+
+    if (!moved && duration < 400) {
+      // Short tap → reveal
+      revealCell(row, col)
+    } else if (!moved && duration >= 500) {
+      // Long press → flag
+      toggleFlag(row, col)
+    }
+    touchStartPos = null
+  })
+
+  gridContainer.addEventListener('touchmove', () => {
+    // Movement detected — cancel long press
+  }, { passive: true })
+
   // Face button
   faceBtn.onpointerdown = () => { faceBtn.textContent = '😮' }
   faceBtn.onpointerup = () => { resetGame(currentConfig) }
@@ -264,8 +326,55 @@ const diffBar = createDifficultyMenu((config: DifficultyConfig) => resetGame(con
 diffBar.classList.add(appStyles.difficultyBar!)
 container.appendChild(diffBar)
 
+// Custom difficulty controls
+const customRow = document.createElement('div')
+customRow.style.cssText = 'display:none;gap:4px;align-items:center;font-size:11px;padding:2px 8px'
+
+const rowsInput = document.createElement('input')
+rowsInput.type = 'number'; rowsInput.min = '5'; rowsInput.max = '30'; rowsInput.value = '16'
+rowsInput.style.width = '46px'
+const colsInput = document.createElement('input')
+colsInput.type = 'number'; colsInput.min = '5'; colsInput.max = '40'; colsInput.value = '30'
+colsInput.style.width = '46px'
+const minesInput = document.createElement('input')
+minesInput.type = 'number'; minesInput.min = '1'; minesInput.max = '999'; minesInput.value = '99'
+minesInput.style.width = '46px'
+const applyBtn = document.createElement('button')
+applyBtn.textContent = '自定义'; applyBtn.style.cssText = 'font-size:11px'
+
+applyBtn.addEventListener('click', () => {
+  const rows = Math.max(5, Math.min(30, Number(rowsInput.value) || 16))
+  const cols = Math.max(5, Math.min(40, Number(colsInput.value) || 30))
+  const mines = Math.max(1, Math.min(rows * cols - 1, Number(minesInput.value) || 10))
+  resetGame({ label: `${rows}×${cols}`, rows, cols, mines })
+})
+
+// Hide custom inputs when preset difficulty selected
+diffBar.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => { customRow.style.display = 'none' })
+})
+
+// Add custom difficulty button
+const customBtn = document.createElement('button')
+customBtn.textContent = '自定义'
+customBtn.className = 'difficulty-btn'
+customBtn.addEventListener('click', () => {
+  customRow.style.display = 'flex'
+})
+diffBar.appendChild(customBtn)
+
+customRow.appendChild(document.createTextNode('行:'))
+customRow.appendChild(rowsInput)
+customRow.appendChild(document.createTextNode('列:'))
+customRow.appendChild(colsInput)
+customRow.appendChild(document.createTextNode('雷:'))
+customRow.appendChild(minesInput)
+customRow.appendChild(applyBtn)
+container.appendChild(customRow)
+
 const gridContainer = document.createElement('div')
 container.appendChild(gridContainer)
+container.appendChild(statsEl)
 
 app.appendChild(container)
 

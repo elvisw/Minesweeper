@@ -72,3 +72,20 @@
 .num6  { color: var(--color-6); }
 .num7  { color: var(--color-7); }
 .num8  { color: var(--color-8); }
+
+/* Responsive: fit grid on small screens */
+@media (max-width: 600px) {
+  .cell {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .cell {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+}
