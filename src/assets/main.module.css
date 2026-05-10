@@ -1,0 +1,83 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-main);
+  border: 2px solid;
+  border-top-color: var(--cell-raised-top);
+  border-left-color: var(--cell-raised-left);
+  border-bottom-color: var(--cell-raised-bottom);
+  border-right-color: var(--cell-raised-right);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 4px;
+  margin-bottom: 6px;
+  border: 2px inset #999;
+  background: var(--bg-main);
+}
+
+.counter {
+  background: var(--counter-bg);
+  color: var(--counter-text);
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 18px;
+  padding: 2px 6px;
+  min-width: 52px;
+  text-align: center;
+}
+
+.faceButton {
+  width: var(--face-size);
+  height: var(--face-size);
+  font-size: 20px;
+  border: 2px solid;
+  border-top-color: var(--cell-raised-top);
+  border-left-color: var(--cell-raised-left);
+  border-bottom-color: var(--cell-raised-bottom);
+  border-right-color: var(--cell-raised-right);
+  background: var(--bg-main);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.faceButton:active {
+  border-top-color: var(--cell-raised-bottom);
+  border-left-color: var(--cell-raised-right);
+  border-bottom-color: var(--cell-raised-top);
+  border-right-color: var(--cell-raised-left);
+}
+
+.difficultyBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.difficultyBtn {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  padding: 2px 10px;
+  background: var(--bg-main);
+  border: 2px solid;
+  border-top-color: var(--cell-raised-top);
+  border-left-color: var(--cell-raised-left);
+  border-bottom-color: var(--cell-raised-bottom);
+  border-right-color: var(--cell-raised-right);
+  cursor: pointer;
+}
+
+.difficultyBtn:active,
+.difficultyBtnActive {
+  border-top-color: var(--cell-raised-bottom);
+  border-left-color: var(--cell-raised-right);
+  border-bottom-color: var(--cell-raised-top);
+  border-right-color: var(--cell-raised-left);
+  background: var(--cell-pressed-bg);
+}

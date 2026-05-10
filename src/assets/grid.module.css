@@ -1,0 +1,74 @@
+.grid {
+  display: inline-grid;
+  gap: 1px;
+  background: var(--cell-dark);
+  border: 3px solid var(--cell-dark);
+  border-top-color: var(--cell-light);
+  border-left-color: var(--cell-light);
+}
+
+.cell {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  cursor: default;
+  user-select: none;
+  border: 2px solid;
+}
+
+/* Covered cell — raised 3D effect */
+.covered {
+  background: var(--bg-main);
+  border-top-color: var(--cell-raised-top);
+  border-left-color: var(--cell-raised-left);
+  border-bottom-color: var(--cell-raised-bottom);
+  border-right-color: var(--cell-raised-right);
+}
+
+.covered:hover {
+  background: #e8e4d8;
+}
+
+/* Pressed cell — mousedown depression */
+.pressed {
+  background: var(--cell-pressed-bg);
+  border-top-color: var(--cell-raised-bottom);
+  border-left-color: var(--cell-raised-right);
+  border-bottom-color: var(--cell-raised-top);
+  border-right-color: var(--cell-raised-left);
+}
+
+/* Revealed cell — flat */
+.revealed {
+  background: var(--cell-pressed-bg);
+  border-color: var(--cell-dark);
+}
+
+/* Mine cell */
+.mine {
+  background: #ff0000;
+}
+
+/* Flagged */
+.flagged {
+  background: var(--bg-main);
+  border-top-color: var(--cell-raised-top);
+  border-left-color: var(--cell-raised-left);
+  border-bottom-color: var(--cell-raised-bottom);
+  border-right-color: var(--cell-raised-right);
+}
+
+/* Number colors */
+.num1  { color: var(--color-1); }
+.num2  { color: var(--color-2); }
+.num3  { color: var(--color-3); }
+.num4  { color: var(--color-4); }
+.num5  { color: var(--color-5); }
+.num6  { color: var(--color-6); }
+.num7  { color: var(--color-7); }
+.num8  { color: var(--color-8); }
