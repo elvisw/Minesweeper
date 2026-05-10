@@ -2,10 +2,6 @@
 
 Windows 7 经典扫雷的 Web 复刻，使用 TypeScript + Vite 构建，零框架依赖。
 
-## 在线体验
-
-https://你的项目名.pages.dev
-
 ## 功能
 
 - 🖱️ 经典交互：左键翻开、右键标旗、问号标记
@@ -57,4 +53,4 @@ src/
 
 ## 许可证
 
-MIT
+GNU General Public License v3.0
