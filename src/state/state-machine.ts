@@ -12,7 +12,7 @@ export function winGame(state: GameState): GameState {
   const grid = state.grid.map(row =>
     row.map(cell => {
       if (!cell.isRevealed && !cell.isFlagged) {
-        return { ...cell, isFlagged: true }
+        return { ...cell, isFlagged: true, isQuestion: false }
       }
       return cell
     })

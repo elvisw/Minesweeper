@@ -81,6 +81,16 @@ describe('winGame', () => {
     expect(won.grid[0][0].isFlagged).toBe(true)
   })
 
+  it('should clear isQuestion when auto-flagging on win', () => {
+    const state = startGame(createInitialState(BEGINNER))
+    state.grid[0][0] = { ...state.grid[0][0], isQuestion: true, isRevealed: false }
+
+    const won = winGame(state)
+
+    expect(won.grid[0][0].isFlagged).toBe(true)
+    expect(won.grid[0][0].isQuestion).toBe(false)
+  })
+
   it('should not transition from Idle', () => {
     const state = createInitialState(BEGINNER)
     const won = winGame(state)
