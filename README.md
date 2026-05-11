@@ -33,12 +33,13 @@ npm run build   # 生产构建 → dist/
 npm test        # 运行测试
 ```
 
-## 部署到 Cloudflare Pages
+## 部署到 Cloudflare
 
-```bash
-npm run build
-npx wrangler pages deploy dist
-```
+1. 在 Cloudflare Dashboard → Workers & Pages → 连接 GitHub 仓库
+2. **合并 Cloudflare 自动提交的配置 PR**（生成 `wrangler.jsonc`）
+3. 后续每次推送到 `main` 自动构建部署
+
+> Cloudflare 会自动检测 Vite 框架并配置 `npx wrangler deploy` 作为部署命令。
 
 ## 架构
 

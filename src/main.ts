@@ -389,6 +389,11 @@ const gridContainer = document.createElement('div')
 container.appendChild(gridContainer)
 container.appendChild(statsEl)
 
+const versionEl = document.createElement('div')
+versionEl.style.cssText = 'font-size:10px;color:#999;text-align:center;margin-top:4px'
+versionEl.textContent = `v${__VERSION__} · ${__GIT_HASH__}`
+container.appendChild(versionEl)
+
 app.appendChild(container)
 
 // ── Start ──
