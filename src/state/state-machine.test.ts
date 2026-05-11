@@ -47,6 +47,40 @@ describe('winGame', () => {
     expect(won.phase).toBe(GamePhase.Won)
   })
 
+  it('should auto-flag all unrevealed cells on win', () => {
+    const state = startGame(createInitialState(BEGINNER))
+    // Simulate: one cell revealed, rest hidden
+    state.grid[0][0] = { ...state.grid[0][0], isRevealed: true }
+
+    const won = winGame(state)
+
+    // Every unrevealed cell should now be flagged
+    for (let r = 0; r < won.rows; r++) {
+      for (let c = 0; c < won.cols; c++) {
+        const cell = won.grid[r][c]
+        if (!cell.isRevealed) {
+          expect(cell.isFlagged).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('should update flagCount to mineCount on win', () => {
+    const state = startGame(createInitialState(BEGINNER))
+    const won = winGame(state)
+    expect(won.flagCount).toBe(won.mineCount)
+  })
+
+  it('should keep already flagged cells flagged on win', () => {
+    const state = startGame(createInitialState(BEGINNER))
+    state.grid[0][0] = { ...state.grid[0][0], isFlagged: true }
+    state.flagCount = 1
+
+    const won = winGame(state)
+
+    expect(won.grid[0][0].isFlagged).toBe(true)
+  })
+
   it('should not transition from Idle', () => {
     const state = createInitialState(BEGINNER)
     const won = winGame(state)

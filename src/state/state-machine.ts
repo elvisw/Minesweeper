@@ -8,7 +8,17 @@ export function startGame(state: GameState): GameState {
 
 export function winGame(state: GameState): GameState {
   if (state.phase !== GamePhase.Playing) return state
-  return { ...state, phase: GamePhase.Won }
+
+  const grid = state.grid.map(row =>
+    row.map(cell => {
+      if (!cell.isRevealed && !cell.isFlagged) {
+        return { ...cell, isFlagged: true }
+      }
+      return cell
+    })
+  )
+
+  return { ...state, grid, phase: GamePhase.Won, flagCount: state.mineCount }
 }
 
 export function loseGame(state: GameState): GameState {
